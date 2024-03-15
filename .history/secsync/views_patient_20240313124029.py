@@ -11,7 +11,7 @@ from datetime import datetime
 
 
 @api_view(['GET'])
-def getAllPatients(request):
+def getAllPatient(request):
    patient = Patient.objects.all()
    serializer = PatientSerializer(patient, many=True)
    
@@ -25,7 +25,6 @@ def getPatientById(request, patient_id):
    patient = Patient.objects.get(id=patient_id)
    serializer = PatientSerializer(patient, many=False)
    return Response(serializer.data)
-
 
 
 @api_view(['POST'])
@@ -93,47 +92,6 @@ def registerPatient(request, *args, **kwargs):
 #    print(response)
   
    return Response(response)
-
-
-
-@api_view(['POST'])
-def updatePatient(request):
- 
-   patient_id = request.data["patient_id"]
-   social_security_number = serializer.data['social_security_number']
-   first_name = serializer.data['first_name']
-   surname = serializer.data['surname']
-   health_insurance_number = serializer.data['health_insurance_number']
-   date_enrolled = serializer.data['date_enrolled']
-   registered_by = serializer.data['registered_by']
-   
-   
-   
-   try:
-      patient = Patient.objects.get(patient_id=patient_id)
-   
-      request.data["social_security_number"] = f"{social_security_number}"
-      request.data["first_name"] = f"{first_name}"
-      request.data["surname"] = f"{surname}"
-      request.data["health_insurance_number"] = f"{health_insurance_number}"
-      request.data["date_enrolled"] = f"{date_enrolled}"
-      request.data["registered_by"] = f"{registered_by}"
-
-
-   except Patient.DoesNotExist:
-      response = {'status' : 'Failed'}  
-   except Exception as e:
-      response = {'status': 'Error'}
-   else:
-      serializer = PatientSerializer(instance=patient, data=request.data)
-      if serializer.is_valid():
-         serializer.save()
-         response = {'status': 'Updated'}
-      else:
-         response = {'status': 'Error'}
-   
-   return Response(response)
-
 
 
 

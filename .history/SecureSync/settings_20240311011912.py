@@ -82,27 +82,27 @@ WSGI_APPLICATION = 'SecureSync.wsgi.application'
 
 DATABASES = {
     
-     "default": {
-        "ENGINE": "mssql",
-        "NAME": "SecureSync",
-        "USER": "grant",
-        "PASSWORD": "ch150m",
-        "HOST": "108.181.168.139",
-        "PORT": "1433",
-        # "OPTIONS": {"driver": "ODBC Driver 17 for SQL Server", 
-        # },
-     }
+    #  "default": {
+    #     "ENGINE": "mssql",
+    #     "NAME": "SecureSync",
+    #     "USER": "grant",
+    #     "PASSWORD": "ch150m",
+    #     "HOST": "108.181.168.139",
+    #     "PORT": "1433",
+    #     # "OPTIONS": {"driver": "ODBC Driver 17 for SQL Server", 
+    #     # },
+    #  }
     
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'grantnufor$securesync2',
-    #     'USER': 'grantnufor',
-    #     'PASSWORD': 'chisomgrant',
-    #     # 'HOST': 'grantnufor.mysql.pythonanywhere-services.com',
-    #     # 'HOST': '127.0.0.1',
-    #     'PORT': '3306',
-    #     'HOST': "grantnufor.mysql.pythonanywhere-services.com",
-    # }
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'grantnufor$securesync2',
+        'USER': 'grantnufor',
+        'PASSWORD': 'chisomgrant',
+        # 'HOST': 'grantnufor.mysql.pythonanywhere-services.com',
+        # 'HOST': '127.0.0.1',
+        'PORT': '3306',
+        'HOST': "grantnufor.mysql.pythonanywhere-services.com",
+    }
 }
 
 

@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse 
 from django.http import JsonResponse
-from .models import Staff, Patient
-from .serializers import PatientSerializer
+from .models import Staff, PatientRecord
+from .serializers import PatientRecordSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import json
@@ -11,9 +11,9 @@ from datetime import datetime
 
 
 @api_view(['GET'])
-def getAllPatients(request):
-   patient = Patient.objects.all()
-   serializer = PatientSerializer(patient, many=True)
+def getAllPatientRecords(request):
+   patient_record = PatientRecord.objects.all()
+   serializer = PatientRecordSerializer(patient_record, many=True)
    
    data = serializer.data 
 
@@ -21,11 +21,10 @@ def getAllPatients(request):
 
 
 @api_view(['GET'])
-def getPatientById(request, patient_id):
-   patient = Patient.objects.get(id=patient_id)
+def getPatientRecordById(request, patient_record_id):
+   patient_record = PatientRecord.objects.get(id=patient_id)
    serializer = PatientSerializer(patient, many=False)
    return Response(serializer.data)
-
 
 
 @api_view(['POST'])

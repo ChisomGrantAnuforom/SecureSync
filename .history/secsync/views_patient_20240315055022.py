@@ -11,7 +11,7 @@ from datetime import datetime
 
 
 @api_view(['GET'])
-def getAllPatients(request):
+def getAllPatient(request):
    patient = Patient.objects.all()
    serializer = PatientSerializer(patient, many=True)
    
@@ -25,7 +25,6 @@ def getPatientById(request, patient_id):
    patient = Patient.objects.get(id=patient_id)
    serializer = PatientSerializer(patient, many=False)
    return Response(serializer.data)
-
 
 
 @api_view(['POST'])

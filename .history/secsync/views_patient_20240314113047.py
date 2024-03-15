@@ -11,7 +11,7 @@ from datetime import datetime
 
 
 @api_view(['GET'])
-def getAllPatients(request):
+def getAllPatient(request):
    patient = Patient.objects.all()
    serializer = PatientSerializer(patient, many=True)
    
@@ -25,7 +25,6 @@ def getPatientById(request, patient_id):
    patient = Patient.objects.get(id=patient_id)
    serializer = PatientSerializer(patient, many=False)
    return Response(serializer.data)
-
 
 
 @api_view(['POST'])
@@ -112,12 +111,17 @@ def updatePatient(request):
    try:
       patient = Patient.objects.get(patient_id=patient_id)
    
-      request.data["social_security_number"] = f"{social_security_number}"
-      request.data["first_name"] = f"{first_name}"
-      request.data["surname"] = f"{surname}"
-      request.data["health_insurance_number"] = f"{health_insurance_number}"
-      request.data["date_enrolled"] = f"{date_enrolled}"
-      request.data["registered_by"] = f"{registered_by}"
+      request.data["tenant_name"] = f"{tenant_name}"
+      request.data["status"] = f"{status}"
+      request.data["black_numbers"] = f"{black_numbers}"
+      request.data["black_words"] = f"{black_words}"
+      request.data["language"] = f"{language}"
+      request.data["country"] = f"{country}"
+      request.data["custom_caller_id"] = f"{custom_caller_id}"
+      request.data["push_notification"] = f"{push_notification}"
+      request.data["manual_check"] = f"{manual_check}"
+      request.data["number_reporting"] = f"{number_reporting}"
+      request.data["smart_messages"] = f"{smart_messages}"
 
 
    except Patient.DoesNotExist:

@@ -89,8 +89,8 @@ DATABASES = {
         "PASSWORD": "ch150m",
         "HOST": "108.181.168.139",
         "PORT": "1433",
-        # "OPTIONS": {"driver": "ODBC Driver 17 for SQL Server", 
-        # },
+        "OPTIONS": {"driver": "ODBC Driver 17 for SQL Server", 
+        },
      }
     
     # 'default': {

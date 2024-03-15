@@ -27,7 +27,6 @@ def getPatientById(request, patient_id):
    return Response(serializer.data)
 
 
-
 @api_view(['POST'])
 def getPatientByPhoneNumber(request):
    try:

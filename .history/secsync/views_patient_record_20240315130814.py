@@ -59,31 +59,35 @@ def createPatientRecord(request, *args, **kwargs):
 
 
 @api_view(['POST'])
-def updatePatientRecord(request):
+def updatePatient(request):
  
-   patient_record_id = request.data["patient_record_id"]
-   patient_id = serializer.data['patient_id']
-   medical_condition = serializer.data['medical_condition']
-   clinical_notes = serializer.data['clinical_notes']
-   date_of_consultation = serializer.data['date_of_consultation']
-   staff_id = serializer.data['staff_id'] 
+   patient_id = request.data["patient_id"]
+   social_security_number = serializer.data['social_security_number']
+   first_name = serializer.data['first_name']
+   surname = serializer.data['surname']
+   health_insurance_number = serializer.data['health_insurance_number']
+   date_enrolled = serializer.data['date_enrolled']
+   registered_by = serializer.data['registered_by']
+   
+   
    
    try:
-      patient_record = PatientRecord.objects.get(patient_record_id=patient_record_id)
+      patient = Patient.objects.get(patient_id=patient_id)
    
-      request.data["patient_id"] = f"{patient_id}"
-      request.data["medical_condition"] = f"{medical_condition}"
-      request.data["clinical_notes"] = f"{clinical_notes}"
-      request.data["date_of_consultation"] = f"{date_of_consultation}"
-      request.data["staff_id"] = f"{staff_id}"
+      request.data["social_security_number"] = f"{social_security_number}"
+      request.data["first_name"] = f"{first_name}"
+      request.data["surname"] = f"{surname}"
+      request.data["health_insurance_number"] = f"{health_insurance_number}"
+      request.data["date_enrolled"] = f"{date_enrolled}"
+      request.data["registered_by"] = f"{registered_by}"
 
 
-   except PatientRecord.DoesNotExist:
+   except Patient.DoesNotExist:
       response = {'status' : 'Failed'}  
    except Exception as e:
       response = {'status': 'Error'}
    else:
-      serializer = PatientRecordSerializer(instance=patient_record, data=request.data)
+      serializer = PatientSerializer(instance=patient, data=request.data)
       if serializer.is_valid():
          serializer.save()
          response = {'status': 'Updated'}
@@ -96,7 +100,7 @@ def updatePatientRecord(request):
 
 
 @api_view(['DELETE'])
-def deletePatientRecord(request, patient_record_id):
-   patient_record = PatientRecord.objects.get(patient_record_id=patient_record_id)
-   patient_record.delete()
-   return Response('Patient Record was successfully deleted!')  
+def deletePatient(request, phone_number):
+   patient = Patient.objects.get(phone_number=phone_number)
+   patient.delete()
+   return Response('Patient was successfully deleted!')  

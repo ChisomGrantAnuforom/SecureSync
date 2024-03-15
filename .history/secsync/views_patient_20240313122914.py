@@ -1,48 +1,24 @@
 from django.shortcuts import render
 from django.http import HttpResponse 
 from django.http import JsonResponse
-from .models import Staff, TempStaff
-from .serializers import StaffSerializer
-from .serializers import TempStaffSerializer
+from .models import Staff, Patient
+from .serializers import PatientSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import json
-import pyotp
-from twilio.rest import Client
 from datetime import datetime
 import secrets
 import string
 from cryptography.fernet import Fernet
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password
-from django.core.mail import EmailMessage
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-
-
-# @api_view(['GET'])
-# def getAllStaffs(request):  
-#    try:
-#       authentication_token = request.data['token']
-#       staff = Staff.objects.get(authentication_token= authentication_token)
-#       # print(staff.phone_number)
-#    except Staff.DoesNotExist:
-#       values_only = "Authentication Failed"
-#    else:
-#       staff = Staff.objects.all()
-#       serializer = StaffSerializer(staff, many=True) 
-#       data = serializer.data 
-#       values_only = [value for item in data for value in item.values()]
-      
-#    return Response({ "numbers" : values_only})
 
 
 
 @api_view(['GET'])
-def getAllStaff(request):
-   staff = Staff.objects.all()
-   serializer = StaffSerializer(staff, many=True)
+def getAllPatient(request):
+   patient = Patient.objects.all()
+   serializer = PatientSerializer(patient, many=True)
    
    data = serializer.data 
 
@@ -50,91 +26,48 @@ def getAllStaff(request):
 
 
 @api_view(['GET'])
-def getStaffById(request, staff_id):
-   staff = Staff.objects.get(id=staff_id)
-   serializer = StaffSerializer(staff, many=False)
+def getPatientById(request, patient_id):
+   patient = Patient.objects.get(id=patient_id)
+   serializer = PatientSerializer(patient, many=False)
    return Response(serializer.data)
 
 
 @api_view(['POST'])
-def getUserByEmailAndPassword(request):
+def getPatientByPhoneNumber(request):
    try:
-      email = request.data['email']
-      staff_input_password = request.data['password']
+      phone_number = request.data['phone_number']
       
       
-      #searching for user with email
-      staff = Staff.objects.get(email=email)
+      #searching for user with phone number
+      patient = Patient.objects.get(phone_number=phone_number)
     
       
-      serializer = StaffSerializer(staff)
-   
-      # Stored hashed password
-      stored_hashed_password = serializer.data['password']  # Retrieve from the database
-
-
-      # Check if the staff input password matches the stored hashed password
-      is_correct = check_password(staff_input_password, stored_hashed_password)
-
-      # Print the result
-      print(is_correct)
-
-      if(is_correct):
-         
-         #generating otp 
-         otp = generate_number_token(4)
-         
-         #updating user otp
-         request.data["first_name"] = f"{staff.first_name}"
-         request.data["last_name"] = f"{staff.last_name}"
-         request.data["designation"] = f"{staff.designation}"
-         request.data["email"] = f"{staff.email}"
-         request.data["phone_number"] = f"{staff.phone_number}"
-         request.data["password"] = f"{staff.password}"
-         request.data["date_registered"] = f"{staff.date_registered}"
-         request.data["otp"] = f"{otp}"   #updating otp here
-         request.data["otp_expiration"] = f"{staff.otp_expiration}"
-         request.data['authentication_token'] = f"{staff.authentication_token}"
-         request.data['verified'] = f"{staff.verified}"
-         
-         
-         staff_otp_serializer = StaffSerializer(instance=staff, data=request.data)
+      serializer = PatientSerializer(patient)
       
-         if staff_otp_serializer.is_valid():
-            staff_otp_serializer.save()
-            response = {'status': 'Updated'}
-         else:
-            response = {'status': 'Error'}
-         
-         
-         # print(response)   
-         
-         
-         #send otp to the user's email******
-         sender_email = 'chisom@voisek.com'
-         subject = 'SecureSync Verification Code'
-         message = "Your login verification code is "+ otp +" \n This single-use code is valid for ten minutes. \n If you did not request a verification code, someone else may have your login details. To protect your account, change your password."
-         sendEmail(sender_email, email, subject, message)
-         
+      social_security_number = serializer.data['social_security_number']
+      first_name = serializer.data['first_name']
+      surname = serializer.data['surname']
+      health_insurance_number = serializer.data['health_insurance_number']
+      date_enrolled = serializer.data['date_enrolled']
+      registered_by = serializer.data['registered_by']
       
-         first_name = serializer.data['first_name']
-         last_name = serializer.data['last_name']
-         email = serializer.data['email']
-      
-         # response = {'status': 'Success'}
-         response = { 'status': f'Success', 
+      # response = {'status': 'Success'}
+      response = { 'status': f'Success', 
+                  'social_security_number': f'{social_security_number}',
                      'first_name': f'{first_name}',
-                     'last_name' : f'{last_name}',
-                     'email': f'{email}',
+                     'surname' : f'{surname}',
+                     'phone_number': f'{phone_number}',
+                     'health_insurance_number' : f'{health_insurance_number}',
+                     'date_enrolled' : f'{date_enrolled}',
+                     'registered_by' : f'{registered_by}'
                      } 
-      else:
-         response = {'status': 'Password is not correct'}
+      
+      
+  
    except Staff.DoesNotExist:
-      response = {'status': 'Staff with this email does not exist'}
+      response = {'status': 'Staff with this Phone Number does not exist'}
       
    return Response(response)
-
-
 
 
 
@@ -229,8 +162,6 @@ def registerStaff(request, *args, **kwargs):
    request.data["date_registered"] = str(datetime.now())
    request.data['authentication_token'] = ""
    request.data['verified'] = "0"
-   
-    
   
    
    serializer = StaffSerializer(data=request.data)
@@ -273,51 +204,7 @@ def registerStaff(request, *args, **kwargs):
    return Response(response)
 
 
-@api_view(['POST'])
-def updatePatient(request):
- 
-   patient_id = request.data["patient_id"]
-   social_security_number = serializer.data['social_security_number']
-   first_name = serializer.data['first_name']
-   surname = serializer.data['surname']
-   health_insurance_number = serializer.data['health_insurance_number']
-   date_enrolled = serializer.data['date_enrolled']
-   registered_by = serializer.data['registered_by']
-   
-   
-   
-   try:
-      patient = Patient.objects.get(patient_id=patient_id)
-   
-      request.data["social_security_number"] = f"{social_security_number}"
-      request.data["first_name"] = f"{first_name}"
-      request.data["surname"] = f"{surname}"
-      request.data["health_insurance_number"] = f"{health_insurance_number}"
-      request.data["date_enrolled"] = f"{date_enrolled}"
-      request.data["registered_by"] = f"{registered_by}"
 
-
-   except Patient.DoesNotExist:
-      response = {'status' : 'Failed'}  
-   except Exception as e:
-      response = {'status': 'Error'}
-   else:
-      serializer = PatientSerializer(instance=patient, data=request.data)
-      if serializer.is_valid():
-         serializer.save()
-         response = {'status': 'Updated'}
-      else:
-         response = {'status': 'Error'}
-   
-   return Response(response)
-
-      
-      
-@api_view(['DELETE'])
-def deleteStaff(request, phone_number):
-   staff = Staff.objects.get(phone_number=phone_number)
-   staff.delete()
-   return Response('Staff was successfully deleted!')  
       
       
 def generateOtp():
