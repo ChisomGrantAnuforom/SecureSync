@@ -15,7 +15,7 @@ urlpatterns = [
     path('api/v1/staff/get_all_staff/', views_staff.getAllStaff, name="get_all_staff"),
     path('api/v1/staff/register_staff/', views_staff.registerStaff, name="register_staff"),
     path('api/v1/staff/login/', views_staff.getUserByEmailAndPassword, name="login"),
-    path('api/v1/staff/delete_staff/<str:phone_number>/', views_staff.deleteStaff, name="delete_staff"),
+    path('api/v1/staff/delete/<str:phone_number>/', views_staff.deleteStaff, name="delete_staff"),
     
     
     #patient endpoints
@@ -23,7 +23,7 @@ urlpatterns = [
     path('api/v1/patient/register_patient/', views_patient.registerPatient, name="register_patient"),
     path('api/v1/patient/get_patient_by_phone_number/', views_patient.getPatientByPhoneNumber, name="get_patient_by_phone_number"),
     path('api/v1/patient/get_patient_by_id/<str:patient_id>/', views_patient.getPatientById, name="get_patient_by_id"),
-    path('api/v1/patient/delete_patient/<str:phone_number>/', views_patient.deletePatient, name="delete_patient"),
+    path('api/v1/patient/delete/<str:phone_number>/', views_patient.deletePatient, name="delete_patient"),
     
     #patient record endpoints
     path('api/v1/patient_record/get_all_patient_records/', views_patient_record.getAllPatientRecords, name="get_all_patient_records"),
